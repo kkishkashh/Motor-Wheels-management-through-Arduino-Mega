@@ -1,0 +1,75 @@
+// Define the pins to which the relays are connected
+const int valve1Pin = 2;
+const int valve2Pin = 4;
+const int valve3Pin = 7;
+const int valve4Pin = 8;
+const int compPin = 12;
+
+// Time to turn on the valve and compressor in milliseconds
+const unsigned long valveOnTime = 1500;
+const unsigned long compOnTime = 1500;
+
+void setup() {
+  // Set pins as outputs
+  pinMode(valve1Pin, OUTPUT);
+  pinMode(valve2Pin, OUTPUT);
+  pinMode(valve3Pin, OUTPUT);
+  pinMode(valve4Pin, OUTPUT);
+  pinMode(compPin, OUTPUT);
+
+  // Turn off all valves and the compressor
+  digitalWrite(valve1Pin, LOW);
+  digitalWrite(valve2Pin, LOW);
+  digitalWrite(valve3Pin, LOW);
+  digitalWrite(valve4Pin, LOW);
+  digitalWrite(compPin, LOW);
+
+  // Initialize the serial port for receiving commands
+  Serial.begin(9600);
+
+  // Turn on the compressor for 1.5 seconds at the beginning
+  digitalWrite(compPin, HIGH);
+  delay(compOnTime);
+  digitalWrite(compPin, LOW);
+}
+
+void loop() {
+  // Check if there is data in the serial port
+  if (Serial.available() > 0) {
+    // Read the command
+    char command = Serial.read();
+    
+    // Turn on the corresponding valve and compressor simultaneously for 1.5 seconds
+    switch (command) {
+      case '1':
+        activateValveWithComp(valve1Pin);
+        break;
+      case '2':
+        activateValveWithComp(valve2Pin);
+        break;
+      case '3':
+        activateValveWithComp(valve3Pin);
+        break;
+      case '4':
+        activateValveWithComp(valve4Pin);
+        break;
+      default:
+        // Unknown command
+        Serial.println("Unknown command");
+        break;
+    }
+  }
+}
+
+void activateValveWithComp(int valvePin) {
+  // Turn on the valve and compressor simultaneously
+  digitalWrite(valvePin, HIGH);
+  digitalWrite(compPin, HIGH);
+
+  // Wait for 1.5 seconds
+  delay(valveOnTime);
+
+  // Turn off the valve and compressor
+  digitalWrite(valvePin, LOW);
+  digitalWrite(compPin, LOW);
+}
